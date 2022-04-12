@@ -1,210 +1,39 @@
 version: '2.2'
 services:
-
-# https://github.com/vulhub/vulhub/tree/master/bash/shellshock
- shellshock:
-   image: vulhub/bash:4.3.0-with-httpd
-   container_name: shellshock
-   tty: true
-   stdin_open: true
-   ports:
-    - "80"
-    - "22"
-   volumes:
-    - ./bash/shellshock/safe.cgi:/var/www/html/safe.cgi
-    - ./bash/shellshock/victim.cgi:/var/www/html/victim.cgi
-   hostname: shellshock
-   networks:
-     vulhubnet:
-       ipv4_address: 10.1.1.5
-
-# https://github.com/vulhub/vulhub/tree/master/jenkins/CVE-2018-1000861
- jenkins:
-   image: vulhub/jenkins:2.138
-   container_name: jenkins
-   tty: true
-   stdin_open: true
-   init: true
-   ports:
-    - "50000"
-    - "8080"
-   hostname: jenkins
-   networks:
-     vulhubnet:
-       ipv4_address: 10.1.1.6
-
-# https://github.com/vulhub/vulhub/tree/master/phpmyadmin/CVE-2018-12613
- phpmyadmin:
-   image: vulhub/phpmyadmin:4.8.1
-   container_name: phpmyadmin
-   tty: true
-   stdin_open: true
-   volumes:
-    - ./phpmyadmin/CVE-2018-12613/config.inc.php:/var/www/html/config.inc.php
-   ports:
-    - "80"
-   depends_on:
-    - mysql
-   hostname: phpmyadmin
-   networks:
-     vulhubnet:
-       ipv4_address: 10.1.1.7
-
- mysql:
-   image: mysql:5.5
-   container_name: mysql
-   environment:
-    - MYSQL_RANDOM_ROOT_PASSWORD=yes
-    - MYSQL_DATABASE=test
-    - MYSQL_USER=test
-    - MYSQL_PASSWORD=test
-   hostname: mysql
-   networks:
-     vulhubnet:
-       ipv4_address: 10.1.1.8
-
- telnetserver:
-   build: ./telnetserver
-   container_name: telnetserver
-   tty: true
-   stdin_open: true
-   ports:
-     - "23"
-   hostname: telnetserver
-   volumes:
-     - ./files:/files
-   networks:
-     vulhubnet:
-       ipv4_address: 10.1.1.9
-
-# https://github.com/vulhub/vulhub/tree/master/log4j/CVE-2021-44228
- solr-log4j:
-   image: vulhub/solr:8.11.0
-   container_name: solr-log4j
-   tty: true
-   stdin_open: true
-   ports:
-     - "8983"
-   hostname: solr-log4j
-   networks:
-     vulhubnet:
-       ipv4_address: 10.1.1.11
- kali:
-   build: ./kali
-   # Note: If you don't want to build everything, use the image then apt install what you want/need
-   # Also note: Building everything, even kali-linux-headless, takes a really long time to build
-   #image: kalilinux/kali-rolling
-   container_name: kali
-   hostname: kali
-   tty: true
-   stdin_open: true
-   ports:
-     - "22"
-   networks:
-     vulhubnet:
-       ipv4_address: 10.1.1.10
-
-# https://github.com/trustedsec/trevorc2
-
- trevorc2:
-   build: ./trevorc2
-   container_name: trevorc2
-   hostname: trevorc2
-   stdin_open: true
-   tty: true
-   networks:
-     vulhubnet:
-       ipv4_address: 10.1.1.12
-
-# https://github.com/opsxcq/exploit-CVE-2017-7494
-# https://github.com/ly4k/PwnKit
-
- vul-linux:
-   build: ./vul-linux
-   container_name: vul-linux
-   hostname: vul-linux
-   stdin_open: true
-   tty: true
-   volumes:
-     - ./files:/files
-   networks:
-     vulhubnet:
-       ipv4_address: 10.1.1.13
-
- http-server:
-   build: ./http-server
-   container_name: http-server
-   hostname: http-server
+ win10:
+   build: ./win10_host
+   container_name: host_01_win10
+   hostname: host_01_win10
    stdin_open: true
    tty: true
    ports:
      - "80"
      - "22"
-   volumes:
-     - ./files:/files
-   networks:
-     vulhubnet:
-       ipv4_address: 10.1.1.14
-
-#
-
- merlin:
-   image: ne0nd0g/merlin
-   container_name: merlin
-   hostname: merlin
-   stdin_open: true
-   tty: true
-   volumes:
-     - ./merlin/server-log:/opt/merlin/data/log
-     - ./merlin/agent-log:/opt/merlin/data/agents
-   networks:
-     vulhubnet:
-       ipv4_address: 10.1.1.15
-
-# https://medium.com/axon-technologies/installing-a-windows-virtual-machine-in-a-linux-docker-container-c78e4c3f9ba1
-# This article was a starting point, updated to Ubuntu 20.04 and added several enhancements and modifications
-
- win10:
-   build: ./win10
-   container_name: win10
-   hostname: win10
-   stdin_open: true
-   tty: true
    privileged: true
-   cap_add:
-     - NET_ADMIN
-     - SYS_ADMIN
-   volumes:
-     - /sys/fs/cgroup:/sys/fs/cgroup:rw
-   devices:
-     - /dev/kvm
-     - /dev/net/tun
    networks:
      vulhubnet:
-       ipv4_address: 10.1.1.16
+       ipv4_address: 10.1.1.12
+
+ win10_dc:
+   build: ./win10_dc
+   container_name: dc1
+   hostname: dc1
+   stdin_open: true
+   tty: true
+   ports:
+     - "80"
+     - "22"
+   privileged: true
+   networks:
+     vulhubnet:
+       ipv4_address: 10.1.1.13
 
 networks:
   vulhubnet:
-    driver: bridge
+    driver: nat
     ipam:
       config:
         - subnet: 10.1.1.0/24
           gateway: 10.1.1.1
 
 # docker network create --subnet=10.1.1.0/24 vulhubnet
-#
-# Add these entries to your /etc/hosts file:
-#
-# Vulhub lab
-#10.1.1.5        shellshock
-#10.1.1.6        jenkins
-#10.1.1.7        phpmyadmin
-#10.1.1.8        mysql
-#10.1.1.9        telnetserver
-#10.1.1.10       kali
-#10.1.1.11       solr-log4j
-#10.1.1.12       trevorc2
-#10.1.1.13       vul-linux
-#10.1.1.14       http-server
-#10.1.1.15       merlin
-#10.1.1.16       merlin

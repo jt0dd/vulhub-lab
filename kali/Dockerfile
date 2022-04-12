@@ -1,6 +1,9 @@
 FROM kalilinux/kali-rolling
 
+# ENV DEBIAN_FRONTEND noninteractive allows for installation of apt modules without user interaction
 ENV DEBIAN_FRONTEND noninteractive
+
+# No clue what this does. https://www.gnu.org/software/gettext/manual/html_node/The-TERM-variable.html
 ENV TERM xterm-256color
 
 # Install Kali Headless and enable SSH
