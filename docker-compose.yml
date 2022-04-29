@@ -9,24 +9,9 @@ services:
    ports:
      - "80"
      - "22"
-   privileged: true
    networks:
      vulhubnet:
        ipv4_address: 10.1.1.12
-
- win10_dc:
-   build: ./win10_dc
-   container_name: dc1
-   hostname: dc1
-   stdin_open: true
-   tty: true
-   ports:
-     - "80"
-     - "22"
-   privileged: true
-   networks:
-     vulhubnet:
-       ipv4_address: 10.1.1.13
 
 networks:
   vulhubnet:
@@ -35,5 +20,3 @@ networks:
       config:
         - subnet: 10.1.1.0/24
           gateway: 10.1.1.1
-
-# docker network create --subnet=10.1.1.0/24 vulhubnet

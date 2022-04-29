@@ -1,3 +1,5 @@
+# Run as Admin
+
 Stop-Service docker
 Stop-service hns
 Start-service hns

@@ -1,0 +1,15 @@
+winlogbeat.event_logs:
+  - name: Application
+    ignore_older: 72h
+  - name: System
+  - name: Security
+  - name: ForwardedEvents
+#    tags: [forwarded]
+  - name: Windows PowerShell
+  - name: Microsoft-Windows-PowerShell/Operational
+  - name: Microsoft-Windows-Sysmon/Operational
+#    tags: [sysmon]
+
+cloud.auth: elastic:bLC9HIyuQklgihJDrSyVIMIp
+
+output.elasticsearch.pipeline: winlogbeat-%{[agent.version]}-routing
